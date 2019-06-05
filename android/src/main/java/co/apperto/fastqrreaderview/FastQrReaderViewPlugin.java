@@ -46,6 +46,9 @@ import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 import io.flutter.view.FlutterView;
 
+import static co.apperto.fastqrreaderview.common.CameraSource.CAMERA_FACING_BACK;
+import static co.apperto.fastqrreaderview.common.CameraSource.CAMERA_FACING_FRONT;
+
 /**
  * FastQrReaderViewPlugin
  */
@@ -567,18 +570,20 @@ public class FastQrReaderViewPlugin implements MethodCallHandler {
             } else {
 //                try {
                 cameraSource = new CameraSource(activity);
+                cameraSource.setFacing(isFrontFacing ? CAMERA_FACING_FRONT : CAMERA_FACING_BACK);
                 barcodeScanningProcessor = new BarcodeScanningProcessor(reqFormats);
                 barcodeScanningProcessor.callback = new OnCodeScanned() {
                     @Override
                     public void onCodeScanned(FirebaseVisionBarcode barcode) {
                         if (camera.scanning) {
+
+                            stopScanning();
 //                                            if (firebaseVisionBarcodes.size() > 0) {
                             Log.w(TAG, "onSuccess: " + barcode.getRawValue());
                             channel.invokeMethod("updateCode", barcode.getRawValue());
 //                                                Map<String, String> event = new HashMap<>();
 //                                                event.put("eventType", "cameraClosing");
 //                                                camera.eventSink.success(event);
-                            stopScanning();
 //                                            }
                         }
                     }
